@@ -128,6 +128,7 @@ class ServiceNowAdapter extends EventEmitter {
                  * responseData parameter.
                  */
                 this.emitOnline();
+                console.log('ServiceNow: Instance is available.');
             }
         });
     }
@@ -192,27 +193,10 @@ class ServiceNowAdapter extends EventEmitter {
                 console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
                 this.responseError = error;
             }
-            if (data.body) {
-                let newObj = [];
-                let obj = JSON.parse(data.body);
-                obj.result.forEach((result) => {
-                    let newResult = {
-                        change_ticket_number: result.number,
-                        active: result.active,
-                        priority: result.priority,
-                        description: result.description,
-                        work_start: result.work_start,
-                        work_end: result.work_end,
-                        change_ticket_key: result.sys_id
-                    }
-                    newObj.push(newResult);
-                })
-                responseData = newObj;
-                console.log(responseData);
-            }
-
+            console.log(`\nResponse returned from GET request is:\n${JSON.stringify(data)}`)
+            this.responseData = data;
         });
-        return callback(responseData, responseError);
+        return callback(this.responseData, this.responseError);
     }
 
     /**
@@ -225,8 +209,6 @@ class ServiceNowAdapter extends EventEmitter {
      *   handles the response.
      */
     postRecord(callback) {
-        let responseData = null;
-        let responseError = null;
         /**
          * Write the body for this function.
          * The function is a wrapper for this.connector's post() method.
@@ -235,27 +217,10 @@ class ServiceNowAdapter extends EventEmitter {
          */
         this.connector.post((data, error) => {
             if (error) {
-                console.error(`\nError returned from POST request:\n${JSON.parse(error)}`);
-                responseError = error;
+                console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
             }
-            if (data.body) {
-                let obj = JSON.parse(data.body);
-                let result = obj.result;
-                let newResult = {
-                    change_ticket_number: result.number,
-                    active: result.active,
-                    priority: result.priority,
-                    description: result.description,
-                    work_start: result.work_start,
-                    work_end: result.work_end,
-                    change_ticket_key: result.sys_id
-                }
-                responseData = newResult;
-                log.info(responseData);
-
-            }
+            console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`)
         });
-        return callback(responseData, responseError);
     }
 }
 
