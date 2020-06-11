@@ -206,13 +206,12 @@ class ServiceNowAdapter extends EventEmitter {
                         change_ticket_key: result.sys_id
                     }
                     newObj.push(newResult);
+                    this.responseData = newObj;
+                    return callback(this.responseData, this.responseError);
                 })
-                responseData = newObj;
-                console.log(responseData);
             }
 
         });
-        return callback(responseData, responseError);
     }
 
     /**
@@ -237,6 +236,7 @@ class ServiceNowAdapter extends EventEmitter {
             if (error) {
                 console.error(`\nError returned from POST request:\n${JSON.parse(error)}`);
                 responseError = error;
+                return callback([],responseError);
             }
             if (data.body) {
                 let obj = JSON.parse(data.body);
@@ -250,12 +250,10 @@ class ServiceNowAdapter extends EventEmitter {
                     work_end: result.work_end,
                     change_ticket_key: result.sys_id
                 }
-                responseData = newResult;
-                log.info(responseData);
-
+                this.responseData = newResult;
+                return callback(this.responseData, this.responseError);
             }
         });
-        return callback(responseData, responseError);
     }
 }
 
